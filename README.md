@@ -1,17 +1,17 @@
-# cordova-plugin-phone-dialer
+# cordova-plugin-phone-call
 Plugin for **cordova greater or equal than v3.0.0_** to enable to call Mobile.
 
 ##Installation
 
 Just type the following statement in your cli Cordova for install.
 
-`cordova plugin add https://github.com/CetasLakshman/cordova-plugin-phone-dialer.git`
+`cordova plugin add https://github.com/CetasLakshman/cordova-plugin-phone-call.git`
 
 if you want to install a specific version just add `#v<version>` to the link
 
 Example:
 
-`cordova plugin add https://github.com/CetasLakshman/cordova-plugin-phone-dialer.git#v0.0.1`
+`cordova plugin add https://github.com/CetasLakshman/cordova-plugin-phone-call.git#v0.0.1`
 
 Description
 ===========
