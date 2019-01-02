@@ -1,14 +1,14 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-plugin-phone-dialer"
+    id="cordova-plugin-phone-call"
     version="1.0.0">
      <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
-    <name>PhoneDialer</name>
-    <description>Cordova Phone Dialer Plugin</description>
+    <name>PhoneCall</name>
+    <description>Cordova Phone Call Plugin</description>
     <license>MIT</license>
     <keywords>cordova,dialer, ios, android</keywords>
-    <repo>https://github.com/CetasLakshman/cordova-plugin-gps-dialog.git</repo>    
+    <repo>https://github.com/CetasLakshman/cordova-plugin-phone-call.git</repo>    
 
     <js-module src="www/dialer.js" name="phonedialer">
         <merges target="phonedialer" />
@@ -36,6 +36,6 @@
         </config-file>
         <source-file 
             src="src/android/PhoneDialer.java" 
-            target-dir="src/com/teamnemitoff/phonedialer"/>
+            target-dir="src/com/cordova/phonedialer"/>
     </platform>
 </plugin>
