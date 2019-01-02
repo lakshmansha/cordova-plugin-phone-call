@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Cordova Phone Dialer Plugin",
   "cordova": {
-    "id": "cordova-plugin-gps-dialogs",
+    "id": "cordova-plugin-phone-dialer",
     "platforms": [
       "android",
       "ios"
