@@ -28,7 +28,7 @@ Usage
 
 Error return by the plugin : ["feature","empty"]
 
-phonedialer.dial(
+cordova.plugins.phonedialer.dial(
   "2125551212", 
   function(err) {
     if (err == "empty") alert("Unknown phone number");

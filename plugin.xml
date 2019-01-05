@@ -1,6 +1,6 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-phone-call"
-    version="1.0.1">
+    version="1.0.2">
      <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
@@ -11,7 +11,7 @@
     <repo>https://github.com/CetasLakshman/cordova-plugin-phone-call.git</repo>    
 
     <js-module src="www/dialer.js" name="phonedialer">
-        <merges target="phonedialer" />
+        <merges target="cordova.plugins.phonedialer" />
     </js-module>
 
     <!-- ios -->
@@ -27,7 +27,7 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="PhoneDialer">
-                <param name="android-package" value="org.apache.cordova.phonedialer"/>
+                <param name="android-package" value="org.apache.cordova.phonedialer.PhoneDialer"/>
             </feature>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/*">
