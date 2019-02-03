@@ -24,9 +24,38 @@ would occur when using window.location.href = "tel:2125551212".
 Usage
 =====
 
+##### On Call function: 
+
+Required CALL_PHONE Permission for Android 5+ Version Apps.
+
+AppChooser for ByPass the Default App.
+
 ```javascript
 
-Error return by the plugin : ["feature","empty"]
+Error return by the plugin : ["feature", "notcall","empty"]
+
+cordova.plugins.phonedialer.call(
+  "2125551212", 
+  function(err) {
+    if (err == "empty") alert("Unknown phone number");
+    else alert("Dialer Error:" + err);    
+  },
+  function(success) { alert('Dialing succeeded'); }, 
+  appChooser
+ );
+
+```
+
+
+##### On Dial function: 
+
+Don't Required CALL_PHONE Permission for Android 5+ Version Apps.
+
+AppChooser for ByPass the Default App.
+
+```javascript
+
+Error return by the plugin : ["feature", "notcall", "empty"]
 
 cordova.plugins.phonedialer.dial(
   "2125551212", 
@@ -39,6 +68,6 @@ cordova.plugins.phonedialer.dial(
 
 ```
 
-##License
+## License
 
 This plugin was created under the MIT license.
