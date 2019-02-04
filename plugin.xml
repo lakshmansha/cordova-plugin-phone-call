@@ -8,7 +8,7 @@
     <description>Cordova Phone Call Plugin</description>
     <license>MIT</license>
     <keywords>cordova, dialer, ios, android</keywords>
-    <repo>https://github.com/CetasLakshman/cordova-plugin-phone-call.git</repo>    
+    <repo>https://github.com/lakshmansha/cordova-plugin-phone-call.git</repo>    
 
     <js-module src="www/dialer.js" name="phonedialer">
         <merges target="cordova.plugins.phonedialer" />

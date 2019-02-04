@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CetasLakshman/cordova-plugin-phone-call.git"
+    "url": "git+https://github.com/lakshmansha/cordova-plugin-phone-call.git"
   },
   "keywords": [
     "cordova",
@@ -26,9 +26,9 @@
   "author": "Lakshman.S",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/CetasLakshman/cordova-plugin-phone-call/issues"
+    "url": "https://github.com/lakshmansha/cordova-plugin-phone-call/issues"
   },
-  "homepage": "https://github.com/CetasLakshman/cordova-plugin-phone-call#readme",
+  "homepage": "https://github.com/lakshmansha/cordova-plugin-phone-call#readme",
   "cordovaDependencies": {
     "3.0.0": {
       "cordova": ">100"

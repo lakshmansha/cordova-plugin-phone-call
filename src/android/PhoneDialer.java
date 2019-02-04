@@ -36,17 +36,26 @@ public class PhoneDialer extends CordovaPlugin {
 		this.callbackContext = callbackContext;
 		this.executeArgs = args;
 
-		if("call".equalsIgnoreCase(action)) {
-			if (cordova.hasPermission(CALL_PHONE)) {
-				callPhone(executeArgs);
-			} else {
-				getCallPermission(CALL_REQ_CODE);
+		try {
+			if("call".equalsIgnoreCase(action)) {
+				if (cordova.hasPermission(CALL_PHONE)) {
+					callPhone(executeArgs);
+				} else {
+					getCallPermission(CALL_REQ_CODE);
+				}
+			} else if ("dial".equalsIgnoreCase(action)) {
+				dialPhone(executeArgs);
 			}
-		} else if ("client".equalsIgnoreCase(action)) {
-            dialPhone(executeArgs);
-        }
 		
-		return true;
+			return true;
+
+		} catch (Exception e) {
+			String msg = "Exception Dialing Phone Number: " + e.getMessage();
+			System.err.println(msg);
+			callbackContext.error(msg);
+
+			return false;
+		}
 		
 		// try {
 		// 	String phoneNumber = args.getString(0);
