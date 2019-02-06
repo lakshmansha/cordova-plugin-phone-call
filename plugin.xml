@@ -1,6 +1,6 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-phone-call"
-    version="1.0.3">
+    version="1.0.4">
      <engines>
         <engine name="cordova" version=">=3.0.0" />
     </engines>
