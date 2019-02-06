@@ -21,7 +21,7 @@
         CDVPluginResult* pluginResult = nil;
         NSString* url;
         NSString* number = [command.arguments objectAtIndex:0];
-        NSString* appChooser = (BOOL)[command.arguments objectAtIndex:1];
+        NSString* appChooser = [command.arguments objectAtIndex:1];
 
         if (number != nil && [number length] > 0) {
             if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
