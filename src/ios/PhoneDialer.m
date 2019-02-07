@@ -35,7 +35,7 @@
             // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch
             if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]]) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"feature"];
-            } else if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:number]]) {
+            } else if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]]) {
             // missing phone number
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"notcall"];
             } else {
@@ -66,11 +66,18 @@
                 url = [NSString stringWithFormat:@"tel:%@",
                 [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
             }
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+
             // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch
-            if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]]) {
+            if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]]) {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"feature"];
             }
+            else if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]]) {
+                // missing phone number
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"notcall"];
+            } else {
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+            }
+
         } else {
             // missing phone number
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"empty"];
