@@ -11,4 +11,6 @@
 
 - (void)dial:(CDVInvokedUrlCommand*)command;
 
+- (void)call:(CDVInvokedUrlCommand*)command;
+
 @end
