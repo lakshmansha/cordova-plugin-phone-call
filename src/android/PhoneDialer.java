@@ -106,10 +106,10 @@ public class PhoneDialer extends CordovaPlugin {
 			}
 
 			cordova.getActivity().startActivity(intent);
-			callbackContext.success();
+			this.callbackContext.success();
 		} 
 		catch (Exception e) {
-			callbackContext.error("CouldNotCallPhoneNumber");
+			this.callbackContext.error("CouldNotCallPhoneNumber");
 		}
 	}
 
@@ -132,10 +132,10 @@ public class PhoneDialer extends CordovaPlugin {
 			}
 
 			cordova.getActivity().startActivity(intent);
-			callbackContext.success();
+			this.callbackContext.success();
 		} 
 		catch (Exception e) {
-			callbackContext.error("CouldNotCallPhoneNumber");
+			this.callbackContext.error("CouldNotCallPhoneNumber");
 		}
 	}
 
