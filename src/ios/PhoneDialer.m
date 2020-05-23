@@ -57,6 +57,7 @@
     [self.commandDelegate runInBackground:^{
 
         CDVPluginResult* pluginResult = nil;
+        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
         
         if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
             
@@ -65,6 +66,7 @@
             
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
+            bool* IsSpeakerOn = [command.arguments objectAtIndex:2];
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -74,6 +76,15 @@
                     url = [NSString stringWithFormat:@"tel:%@",
                     [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
                 }
+                
+                if (IsSpeakerOn) {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
+                    NSLog(@"Configuring Speaker On");  
+                } else {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+                    NSLog(@"Configuring Speaker OFf");
+                }
+                
 
                 // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch
                 if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]]) {
@@ -103,6 +114,7 @@
     [self.commandDelegate runInBackground:^{
 
         CDVPluginResult* pluginResult = nil;
+        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
         
         if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
             
@@ -120,6 +132,14 @@
                     // escape characters such as spaces that may not be accepted by openURL
                     url = [NSString stringWithFormat:@"tel:%@",
                     [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                }
+
+                if (IsSpeakerOn) {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
+                    NSLog(@"Configuring Speaker On");  
+                } else {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+                    NSLog(@"Configuring Speaker OFf");
                 }
 
                 // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch

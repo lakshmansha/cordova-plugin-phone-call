@@ -107,6 +107,11 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 
+			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));
+			if (IsSpeakerOn) {
+				speakerOn();
+			}
+
 			cordova.getActivity().startActivity(intent);
 			this.callbackContext.success();
 		} 
