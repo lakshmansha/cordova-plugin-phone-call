@@ -23,7 +23,7 @@ module.exports = {
             if (successCallback) successCallback();
         }
     },
-    call: function(phnum, errorCallback, successCallback, bypassAppChooser, IsSpeakerOn) {
+    call: function(phnum, errorCallback, successCallback, IsSpeakerOn, bypassAppChooser) {
         if (phnum == null) errorCallback("empty");
         if (platformId == 'ios' || platformId == 'android') {
             exec(
