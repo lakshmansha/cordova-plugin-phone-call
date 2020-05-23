@@ -107,14 +107,15 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 
-			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));		
+			String IsSpeakerOn = args.getString(2);		
 			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 			audioManager.setMode(AudioManager.MODE_IN_CALL);
-			if (IsSpeakerOn) {
+			if (IsSpeakerOn.toLowerCase() == "true") {
 				audioManager.setSpeakerphoneOn(true);
 			} else {
 				audioManager.setSpeakerphoneOn(false);
 			}
+
 
 			this.cordova.getActivity().startActivity(intent);						
 
