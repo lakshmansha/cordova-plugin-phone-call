@@ -111,6 +111,7 @@
             
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
+            bool* IsSpeakerOn = [command.arguments objectAtIndex:2];
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -129,6 +130,7 @@
                     // missing phone number
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"notcall"];
                 } else {
+                    
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 }
 
@@ -142,5 +144,20 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
+
+- (BOOL)speakerOn
+{        
+    BOOL success = nil;
+    @try {
+        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+        success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];    
+        NSLog(@"Configuring Speaker On");
+    }    
+    @catch (NSException *exception) {
+       NSLog(@"Unknown error returned from Configuring Speaker On");
+    }
+    return success;
+}
+
 
 @end

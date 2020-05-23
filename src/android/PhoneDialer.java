@@ -17,6 +17,8 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.media.AudioManager;
+import android.util.Log;
 
 
 public class PhoneDialer extends CordovaPlugin {
@@ -131,6 +133,11 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 
+			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));
+			if (IsSpeakerOn) {
+				speakerOn();
+			}
+
 			cordova.getActivity().startActivity(intent);
 			this.callbackContext.success();
 		} 
@@ -160,4 +167,14 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 		return "";
 	}
+
+	private void speakerOn() {
+        AudioManager audioManager = (AudioManager) cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(true);
+	}
+
+	private void speakerOff() {
+        AudioManager audioManager = (AudioManager) cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setSpeakerphoneOn(false);
+    }
 }

@@ -23,7 +23,7 @@ module.exports = {
             if (successCallback) successCallback();
         }
     },
-    call: function(phnum, errorCallback, successCallback, bypassAppChooser) {
+    call: function(phnum, errorCallback, successCallback, bypassAppChooser, IsSpeakerOn) {
         if (phnum == null) errorCallback("empty");
         if (platformId == 'ios' || platformId == 'android') {
             exec(
@@ -31,7 +31,7 @@ module.exports = {
                 errorCallback, 
                 "PhoneDialer", 
                 "call", 
-                [phnum, bypassAppChooser]
+                [phnum, bypassAppChooser, IsSpeakerOn]
             );
         } else {
             document.location.href = "tel:" + phnum;
