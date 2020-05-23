@@ -67,7 +67,7 @@
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
             NSString* appChooser = [command.arguments objectAtIndex:1];
-            bool* IsSpeakerOn = [command.arguments objectAtIndex:2];
+            NSString* IsSpeakerOn = [command.arguments objectAtIndex:2].lowercaseString;            
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -89,14 +89,13 @@
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 }
 
-                 if (IsSpeakerOn) {
+                if([IsSpeakerOn isEqualToString: @"true"]){
                     [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
                     NSLog(@"Configuring Speaker On");  
                 } else {
                     [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
                     NSLog(@"Configuring Speaker OFf");
                 }
-                
 
             } else {
                 // missing phone number
@@ -124,7 +123,6 @@
             
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
-            bool* IsSpeakerOn = [command.arguments objectAtIndex:2];
             NSString* appChooser = [command.arguments objectAtIndex:1];
 
             if (number != nil && [number length] > 0) {
@@ -145,16 +143,7 @@
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"notcall"];
                 } else {                    
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-                }
-                
-                if (IsSpeakerOn) {
-                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
-                    NSLog(@"Configuring Speaker On");  
-                } else {
-                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
-                    NSLog(@"Configuring Speaker OFf");
-                }
-
+                }                                
 
             } else {
                 // missing phone number

@@ -28,7 +28,8 @@
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.CALL_PHONE" />
             <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-            <uses-feature android:name="android.hardware.telephony" android:required="false" />
+            <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+            <uses-feature android:name="android.hardware.telephony" android:required="false" />            
         </config-file>
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="PhoneDialer">
