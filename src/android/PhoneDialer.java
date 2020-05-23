@@ -106,8 +106,10 @@ public class PhoneDialer extends CordovaPlugin {
 			if (bypassAppChooser) {
 				intent.setPackage(getDialerPackage(intent));
 			}
+			
+			this.cordova.getActivity().startActivity(intent);
 
-			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));
+			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));		
 			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 			if (IsSpeakerOn) {
@@ -116,7 +118,6 @@ public class PhoneDialer extends CordovaPlugin {
 				audioManager.setSpeakerphoneOn(false);
 			}
 
-			this.cordova.getActivity().startActivity(intent);
 			this.callbackContext.success();
 		} 
 		catch (Exception e) {
@@ -142,7 +143,9 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 
-			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));
+			this.cordova.getActivity().startActivity(intent);
+
+			boolean IsSpeakerOn = Boolean.parseBoolean(args.getString(2));		
 			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
 			if (IsSpeakerOn) {
@@ -151,7 +154,6 @@ public class PhoneDialer extends CordovaPlugin {
 				audioManager.setSpeakerphoneOn(false);
 			}
 
-			this.cordova.getActivity().startActivity(intent);
 			this.callbackContext.success();
 		} 
 		catch (Exception e) {
