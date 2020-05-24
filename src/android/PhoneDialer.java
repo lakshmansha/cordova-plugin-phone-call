@@ -25,6 +25,11 @@ public class PhoneDialer extends CordovaPlugin {
 	public static final int CALL_REQ_CODE = 0;
 	public static final int PERMISSION_DENIED_ERROR = 20;
 	public static final String CALL_PHONE = Manifest.permission.CALL_PHONE;
+	public String isSpeakerOn = "False"; // To control the call has been made from the application
+	public boolean callFromOffHook = false; // To control the change to idle state is from the app call
+	public boolean callFromApp = false; // To control the call has been made from the application
+	public TelephonyManager manager;
+ 	public StatePhoneReceiver myPhoneStateListener;
 
 	private CallbackContext callbackContext;        // The callback context from which we were invoked.
 	private JSONArray executeArgs;
@@ -101,6 +106,16 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 		
 		try {
+			myPhoneStateListener = new StatePhoneReceiver(this);
+			manager.listen(myPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE); // start listening to the phone changes
+
+			String IsSpeakerOn = args.getString(2);
+			if (IsSpeakerOn.toLowerCase() == "true") {
+				callFromApp = true;
+			} else {
+				callFromApp = false;
+			}
+
 			Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_CALL : Intent.ACTION_VIEW);
 			intent.setData(Uri.parse(number));
 
@@ -162,8 +177,8 @@ public class PhoneDialer extends CordovaPlugin {
 	}
 
 	private boolean isTelephonyEnabled() {
-		TelephonyManager tm = (TelephonyManager) this.cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-		return tm != null && tm.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
+		manager = (TelephonyManager) this.cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+		return manager != null && manager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
 	}
 
 	private String getDialerPackage(Intent intent) {
@@ -183,3 +198,47 @@ public class PhoneDialer extends CordovaPlugin {
 		return "";
 	}
 }
+
+// Monitor for changes to the state of the phone
+ public class StatePhoneReceiver extends PhoneStateListener {
+     Context context;
+     public StatePhoneReceiver(Context context) {
+         this.context = context;
+     }
+
+     @Override
+     public void onCallStateChanged(int state, String incomingNumber) {
+         super.onCallStateChanged(state, incomingNumber);
+        
+         switch (state) {
+        
+         case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
+          if (callFromApp) {
+              callFromApp=false;
+              callFromOffHook=true;
+                  
+              try {
+                Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
+              } catch (InterruptedException e) {
+              }
+          
+              //Activate loudspeaker
+              AudioManager audioManager = (AudioManager)
+                                          getSystemService(Context.AUDIO_SERVICE);
+              audioManager.setMode(AudioManager.MODE_IN_CALL);
+              audioManager.setSpeakerphoneOn(true);
+           }
+           break;
+        
+        case TelephonyManager.CALL_STATE_IDLE: //Call is finished
+          if (callFromOffHook) {
+                callFromOffHook=false;
+                AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+                manager.listen(myPhoneStateListener, // Remove listener
+                      PhoneStateListener.LISTEN_NONE);
+             }
+          break;
+         }
+     }
+ }

@@ -67,6 +67,7 @@
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
             NSString* appChooser = [command.arguments objectAtIndex:1];
+            NSString* IsSpeakerOn = [command.arguments objectAtIndex:2].lowercaseString;     
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -75,7 +76,7 @@
                     // escape characters such as spaces that may not be accepted by openURL
                     url = [NSString stringWithFormat:@"tel:%@",
                     [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-                }                           
+                }                                       
 
                 // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch
                 if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]]) {
@@ -87,6 +88,15 @@
                 } else {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 }
+
+                if([IsSpeakerOn isEqualToString: @"true"]){
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
+                    NSLog(@"Configuring Speaker On");  
+                } else {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+                    NSLog(@"Configuring Speaker OFf");
+                }    
+
             } else {
                 // missing phone number
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"empty"];
