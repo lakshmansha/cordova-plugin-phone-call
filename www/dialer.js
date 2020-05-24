@@ -37,18 +37,5 @@ module.exports = {
             document.location.href = "tel:" + phnum;
             if (successCallback) successCallback();
         }
-    },
-    speakerOn : function(successCallback, errorCallback) {
-        if (platformId == 'ios' || platformId == 'android') {
-            exec(
-                successCallback, 
-                errorCallback, 
-                "PhoneDialer", 
-                "speakerOn",
-                []
-            );
-        } else {
-            if (successCallback) successCallback();
-        }
     }
 };

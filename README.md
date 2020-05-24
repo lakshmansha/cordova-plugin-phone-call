@@ -5,13 +5,17 @@ Plugin for **cordova greater or equal than v3.0.0_** to enable to call Mobile.
 
 Just type the following statement in your cli Cordova for install.
 
-`cordova plugin add https://github.com/lakshmansha/cordova-plugin-phone-call.git`
+`cordova plugin add cordova-plugin-phone-call`
 
-if you want to install a specific version just add `#v<version>` to the link
+If Wanted the Beta Version
+
+`cordova plugin add https://github.com/lakshmansha/cordova-plugin-phone-call.git#develop`
+
+if you want to install a specific version just add `#<version>` to the link
 
 Example:
 
-`cordova plugin add https://github.com/lakshmansha/cordova-plugin-phone-call.git#v0.0.1`
+`cordova plugin add https://github.com/lakshmansha/cordova-plugin-phone-call.git#0.0.1`
 
 Description
 ===========
@@ -30,17 +34,20 @@ Required CALL_PHONE Permission for Android 5+ Version Apps.
 
 AppChooser for ByPass the Default App.
 
+To Enable Speaker-On
+
 ```javascript
 
 Error return by the plugin : ["feature", "notcall","empty"]
 
-cordova.plugins.phonedialer.call(
+cordova.plugins.phonedialer.call(  
   "2125551212", 
+  function(success) { alert('Dialing succeeded'); }, 
   function(err) {
     if (err == "empty") alert("Unknown phone number");
     else alert("Dialer Error:" + err);    
-  },
-  function(success) { alert('Dialing succeeded'); }, 
+  },  
+  onSpeakerOn,
   appChooser
  );
 
@@ -59,11 +66,12 @@ Error return by the plugin : ["feature", "notcall", "empty"]
 
 cordova.plugins.phonedialer.dial(
   "2125551212", 
+  function(success) { alert('Dialing succeeded'); },
   function(err) {
     if (err == "empty") alert("Unknown phone number");
     else alert("Dialer Error:" + err);    
   },
-  function(success) { alert('Dialing succeeded'); }
+  appChooser
  );
 
 ```
