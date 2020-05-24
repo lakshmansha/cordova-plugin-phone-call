@@ -60,10 +60,8 @@ public class PhoneDialer extends CordovaPlugin {
 				}
 			} else if ("dial".equalsIgnoreCase(action)) {
 				dialPhone(executeArgs);
-			} else if ("speakerOn".equalsIgnoreCase(action)) {
-				this.speakerOn();				
-			}
-		
+			} 
+			
 			return true;
 
 		} catch (Exception e) {
