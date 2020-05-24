@@ -156,17 +156,4 @@
     }];
 }
 
-- (void)speakerOn:(CDVInvokedUrlCommand*)command
-{
-    CDVPluginResult* pluginResult = nil;
-    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
-    BOOL success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
-    if(success) {
-      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-    } else {
-      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
-    }
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
 @end

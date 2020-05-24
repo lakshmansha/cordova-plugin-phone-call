@@ -185,23 +185,6 @@ public class PhoneDialer extends CordovaPlugin {
 			this.callbackContext.error("CouldNotCallPhoneNumber");
 		}
 	}
-
-    private void speakerOn() {
-		try {
-			try {
-				Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
-			} catch (InterruptedException e) {
-			}
-			
-			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-			audioManager.setMode(AudioManager.MODE_IN_CALL);
-			audioManager.setSpeakerphoneOn(true);
-			this.callbackContext.success();
-		} 
-		catch (Exception e) {
-			this.callbackContext.error("Could Not Enable Speaker");
-		}
-    }
 	
 	private void dialPhone(JSONArray args) throws JSONException {
 		String number = args.getString(0);
