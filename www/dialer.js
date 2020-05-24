@@ -8,7 +8,7 @@ module.exports = {
      *
      * @param {String, Function}      The phone number to call, The callback error function
      */
-    dial: function(phnum, errorCallback, successCallback, bypassAppChooser) {
+    dial: function(phnum, successCallback, errorCallback, bypassAppChooser) {
         if (phnum == null) errorCallback("empty");
         if (platformId == 'ios' || platformId == 'android') {
             exec(
@@ -23,7 +23,7 @@ module.exports = {
             if (successCallback) successCallback();
         }
     },
-    call: function(phnum, errorCallback, successCallback, bypassAppChooser) {
+    call: function(phnum, successCallback, errorCallback, speakerOn, bypassAppChooser) {
         if (phnum == null) errorCallback("empty");
         if (platformId == 'ios' || platformId == 'android') {
             exec(
@@ -31,7 +31,7 @@ module.exports = {
                 errorCallback, 
                 "PhoneDialer", 
                 "call", 
-                [phnum, bypassAppChooser]
+                [phnum, bypassAppChooser, speakerOn]
             );
         } else {
             document.location.href = "tel:" + phnum;

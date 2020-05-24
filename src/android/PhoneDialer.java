@@ -1,7 +1,9 @@
 package org.apache.cordova.phonedialer;
 
-import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -17,19 +19,32 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.media.AudioManager;
+import android.util.Log;
 
 
 public class PhoneDialer extends CordovaPlugin {
 	public static final int CALL_REQ_CODE = 0;
 	public static final int PERMISSION_DENIED_ERROR = 20;
 	public static final String CALL_PHONE = Manifest.permission.CALL_PHONE;
+	public String isSpeakerOn = "False"; // To control the call has been made from the application
+	public boolean callFromOffHook = false; // To control the change to idle state is from the app call
+	public boolean callFromApp = false; // To control the call has been made from the application
+	public TelephonyManager manager;
+ 	public StatePhoneReceiver myPhoneStateListener;
 
 	private CallbackContext callbackContext;        // The callback context from which we were invoked.
 	private JSONArray executeArgs;
+	private CordovaInterface icordova;
 
 	protected void getCallPermission(int requestCode) {
 		cordova.requestPermission(this, requestCode, CALL_PHONE);
 	}
+
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		icordova = cordova;
+		super.initialize(cordova, webView);		
+    }
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -45,6 +60,8 @@ public class PhoneDialer extends CordovaPlugin {
 				}
 			} else if ("dial".equalsIgnoreCase(action)) {
 				dialPhone(executeArgs);
+			} else if ("speakerOn".equalsIgnoreCase(action)) {
+				this.speakerOn();				
 			}
 		
 			return true;
@@ -52,7 +69,7 @@ public class PhoneDialer extends CordovaPlugin {
 		} catch (Exception e) {
 			String msg = "Exception Dialing Phone Number: " + e.getMessage();
 			System.err.println(msg);
-			callbackContext.error(msg);
+			this.callbackContext.error(msg);
 
 			return false;
 		}
@@ -88,6 +105,51 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 	}
 
+	// Monitor for changes to the state of the phone
+	public class StatePhoneReceiver extends PhoneStateListener {
+		Context context;
+		CordovaInterface cordova;
+		public StatePhoneReceiver(Context context, CordovaInterface cordova) {
+			this.context = context;
+			this.cordova = cordova;
+		}
+
+		@Override
+		public void onCallStateChanged(int state, String incomingNumber) {
+			super.onCallStateChanged(state, incomingNumber);
+
+			switch (state) {
+
+				case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
+					if (callFromApp) {
+						callFromApp=false;
+						callFromOffHook=true;
+
+						try {
+							Thread.sleep(100); // Delay 0,5 seconds to handle better turning on loudspeaker
+						} catch (InterruptedException e) {
+						}
+
+						//Activate loudspeaker
+						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+						audioManager.setMode(AudioManager.MODE_IN_CALL);
+						audioManager.setSpeakerphoneOn(true);
+					}
+					break;
+
+				case TelephonyManager.CALL_STATE_IDLE: //Call is finished
+					if (callFromOffHook) {
+						callFromOffHook=false;
+						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+						audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+						manager.listen(myPhoneStateListener, // Remove listener
+								PhoneStateListener.LISTEN_NONE);
+					}
+					break;
+			}
+		}
+	}
+
 	private void callPhone(JSONArray args) throws JSONException {
 		String number = args.getString(0);
 		number = number.replaceAll("#", "%23");
@@ -98,21 +160,31 @@ public class PhoneDialer extends CordovaPlugin {
 		
 		try {
 			Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_CALL : Intent.ACTION_VIEW);
+
+			myPhoneStateListener = new StatePhoneReceiver(this.cordova.getContext(), this.cordova);
+			manager.listen(myPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE); // start listening to the phone changes
+			String IsSpeakerOn = args.getString(2);
+			if (IsSpeakerOn.toLowerCase().equals("true")) {
+				callFromApp = true;
+			} else {
+				callFromApp = false;
+			}
+
 			intent.setData(Uri.parse(number));
 
 			boolean bypassAppChooser = Boolean.parseBoolean(args.getString(1));
 			if (bypassAppChooser) {
 				intent.setPackage(getDialerPackage(intent));
 			}
+			
+			cordova.getActivity().startActivity(intent);									
 
-			cordova.getActivity().startActivity(intent);
 			this.callbackContext.success();
 		} 
 		catch (Exception e) {
 			this.callbackContext.error("CouldNotCallPhoneNumber");
 		}
 	}
-
 	
 	private void dialPhone(JSONArray args) throws JSONException {
 		String number = args.getString(0);
@@ -131,7 +203,8 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 
-			cordova.getActivity().startActivity(intent);
+			this.cordova.getActivity().startActivity(intent);
+
 			this.callbackContext.success();
 		} 
 		catch (Exception e) {
@@ -140,12 +213,12 @@ public class PhoneDialer extends CordovaPlugin {
 	}
 
 	private boolean isTelephonyEnabled() {
-		TelephonyManager tm = (TelephonyManager) cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-		return tm != null && tm.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
+		manager = (TelephonyManager) this.cordova.getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+		return manager != null && manager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE;
 	}
 
 	private String getDialerPackage(Intent intent) {
-		PackageManager packageManager = (PackageManager) cordova.getActivity().getPackageManager();
+		PackageManager packageManager = (PackageManager) this.cordova.getActivity().getPackageManager();
 		List activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
 		for (int i = 0; i < activities.size(); i++) {
