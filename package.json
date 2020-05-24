@@ -33,8 +33,5 @@
     "3.0.0": {
       "cordova": ">100"
     }
-  },
-  "devDependencies": {
-    "cordova-paramedic": "^0.5.0"
   }
 }
