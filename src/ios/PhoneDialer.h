@@ -13,4 +13,6 @@
 
 - (void)call:(CDVInvokedUrlCommand*)command;
 
+- (void)speakerOn:(CDVInvokedUrlCommand*)command;
+
 @end

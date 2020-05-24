@@ -57,6 +57,7 @@
     [self.commandDelegate runInBackground:^{
 
         CDVPluginResult* pluginResult = nil;
+        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
         
         if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
             
@@ -65,6 +66,8 @@
             
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
+            NSString* appChooser = [command.arguments objectAtIndex:1];
+            NSString* IsSpeakerOn = [command.arguments objectAtIndex:2].lowercaseString;     
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -73,7 +76,7 @@
                     // escape characters such as spaces that may not be accepted by openURL
                     url = [NSString stringWithFormat:@"tel:%@",
                     [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-                }
+                }                                       
 
                 // openURL is expected to fail on devices that do not have the Phone app, such as simulators, iPad, iPod touch
                 if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:url]]) {
@@ -85,6 +88,14 @@
                 } else {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 }
+
+                if([IsSpeakerOn isEqualToString: @"true"]){
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
+                    NSLog(@"Configuring Speaker On");  
+                } else {
+                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
+                    NSLog(@"Configuring Speaker OFf");
+                }    
 
             } else {
                 // missing phone number
@@ -103,6 +114,7 @@
     [self.commandDelegate runInBackground:^{
 
         CDVPluginResult* pluginResult = nil;
+        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
         
         if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
             
@@ -111,6 +123,7 @@
             
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
+            NSString* appChooser = [command.arguments objectAtIndex:1];
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -128,9 +141,9 @@
                 else if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]]) {
                     // missing phone number
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"notcall"];
-                } else {
+                } else {                    
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-                }
+                }                                
 
             } else {
                 // missing phone number
@@ -141,6 +154,19 @@
         // return result
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
+}
+
+- (void)speakerOn:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    BOOL success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    if(success) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
+    }
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end
