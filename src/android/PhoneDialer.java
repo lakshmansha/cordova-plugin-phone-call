@@ -105,6 +105,51 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 	}
 
+	// Monitor for changes to the state of the phone
+	public class StatePhoneReceiver extends PhoneStateListener {
+		Context context;
+		CordovaInterface cordova;
+		public StatePhoneReceiver(Context context, CordovaInterface cordova) {
+			this.context = context;
+			this.cordova = cordova;
+		}
+
+		@Override
+		public void onCallStateChanged(int state, String incomingNumber) {
+			super.onCallStateChanged(state, incomingNumber);
+
+			switch (state) {
+
+				case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
+					if (callFromApp) {
+						callFromApp=false;
+						callFromOffHook=true;
+
+						try {
+							Thread.sleep(100); // Delay 0,5 seconds to handle better turning on loudspeaker
+						} catch (InterruptedException e) {
+						}
+
+						//Activate loudspeaker
+						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+						//audioManager.setMode(AudioManager.MODE_IN_CALL);
+						audioManager.setSpeakerphoneOn(true);
+					}
+					break;
+
+				case TelephonyManager.CALL_STATE_IDLE: //Call is finished
+					if (callFromOffHook) {
+						callFromOffHook=false;
+						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+						//audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+						manager.listen(myPhoneStateListener, // Remove listener
+								PhoneStateListener.LISTEN_NONE);
+					}
+					break;
+			}
+		}
+	}
+
 	private void callPhone(JSONArray args) throws JSONException {
 		String number = args.getString(0);
 		number = number.replaceAll("#", "%23");
@@ -113,17 +158,18 @@ public class PhoneDialer extends CordovaPlugin {
 			number = String.format("tel:%s", number);
 		}
 		
-		try {			
-			myPhoneStateListener = new StatePhoneReceiver(Context, this.cordova);
+		try {
+			Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_CALL : Intent.ACTION_VIEW);
+
+			myPhoneStateListener = new StatePhoneReceiver(this.cordova.getContext(), this.cordova);
 			manager.listen(myPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE); // start listening to the phone changes
 			String IsSpeakerOn = args.getString(2);
-			if (IsSpeakerOn.toLowerCase() == "true") {
+			if (IsSpeakerOn.toLowerCase().equals("true")) {
 				callFromApp = true;
 			} else {
 				callFromApp = false;
 			}
 
-			Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_CALL : Intent.ACTION_VIEW);
 			intent.setData(Uri.parse(number));
 
 			boolean bypassAppChooser = Boolean.parseBoolean(args.getString(1));
@@ -204,50 +250,4 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 		return "";
 	}
-
-	// Monitor for changes to the state of the phone
-	public class StatePhoneReceiver extends PhoneStateListener {
-		Context context;
-		CordovaInterface cordova;
-		public StatePhoneReceiver(Context context, CordovaInterface cordova) {
-			this.context = context;
-			this.cordova = cordova;
-		}
-
-		@Override
-		public void onCallStateChanged(int state, String incomingNumber) {
-			super.onCallStateChanged(state, incomingNumber);
-			
-			switch (state) {
-			
-			case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
-			if (callFromApp) {
-				callFromApp=false;
-				callFromOffHook=true;
-					
-				try {
-					Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
-				} catch (InterruptedException e) {
-				}
-			
-				//Activate loudspeaker
-				AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
-				audioManager.setMode(AudioManager.MODE_IN_CALL);
-				audioManager.setSpeakerphoneOn(true);
-			}
-			break;
-			
-			case TelephonyManager.CALL_STATE_IDLE: //Call is finished
-			if (callFromOffHook) {
-					callFromOffHook=false;
-					AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
-					audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
-					manager.listen(myPhoneStateListener, // Remove listener
-						PhoneStateListener.LISTEN_NONE);
-				}
-			break;
-			}
-		}
-	}
-
 }
