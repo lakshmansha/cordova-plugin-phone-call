@@ -197,48 +197,49 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 		return "";
 	}
+
+	// Monitor for changes to the state of the phone
+	public class StatePhoneReceiver extends PhoneStateListener {
+		Context context;
+		public StatePhoneReceiver(Context context) {
+			this.context = context;
+		}
+
+		@Override
+		public void onCallStateChanged(int state, String incomingNumber) {
+			super.onCallStateChanged(state, incomingNumber);
+			
+			switch (state) {
+			
+			case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
+			if (callFromApp) {
+				callFromApp=false;
+				callFromOffHook=true;
+					
+				try {
+					Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
+				} catch (InterruptedException e) {
+				}
+			
+				//Activate loudspeaker
+				AudioManager audioManager = (AudioManager)
+											getSystemService(Context.AUDIO_SERVICE);
+				audioManager.setMode(AudioManager.MODE_IN_CALL);
+				audioManager.setSpeakerphoneOn(true);
+			}
+			break;
+			
+			case TelephonyManager.CALL_STATE_IDLE: //Call is finished
+			if (callFromOffHook) {
+					callFromOffHook=false;
+					AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+					audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+					manager.listen(myPhoneStateListener, // Remove listener
+						PhoneStateListener.LISTEN_NONE);
+				}
+			break;
+			}
+		}
+	}
+
 }
-
-// Monitor for changes to the state of the phone
- public class StatePhoneReceiver extends PhoneStateListener {
-     Context context;
-     public StatePhoneReceiver(Context context) {
-         this.context = context;
-     }
-
-     @Override
-     public void onCallStateChanged(int state, String incomingNumber) {
-         super.onCallStateChanged(state, incomingNumber);
-        
-         switch (state) {
-        
-         case TelephonyManager.CALL_STATE_OFFHOOK: //Call is established
-          if (callFromApp) {
-              callFromApp=false;
-              callFromOffHook=true;
-                  
-              try {
-                Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
-              } catch (InterruptedException e) {
-              }
-          
-              //Activate loudspeaker
-              AudioManager audioManager = (AudioManager)
-                                          getSystemService(Context.AUDIO_SERVICE);
-              audioManager.setMode(AudioManager.MODE_IN_CALL);
-              audioManager.setSpeakerphoneOn(true);
-           }
-           break;
-        
-        case TelephonyManager.CALL_STATE_IDLE: //Call is finished
-          if (callFromOffHook) {
-                callFromOffHook=false;
-                AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
-                manager.listen(myPhoneStateListener, // Remove listener
-                      PhoneStateListener.LISTEN_NONE);
-             }
-          break;
-         }
-     }
- }
