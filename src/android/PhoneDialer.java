@@ -1,7 +1,9 @@
 package org.apache.cordova.phonedialer;
 
-import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -33,10 +35,16 @@ public class PhoneDialer extends CordovaPlugin {
 
 	private CallbackContext callbackContext;        // The callback context from which we were invoked.
 	private JSONArray executeArgs;
+	private CordovaInterface icordova;
 
 	protected void getCallPermission(int requestCode) {
 		cordova.requestPermission(this, requestCode, CALL_PHONE);
 	}
+
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		icordova = cordova;
+		super.initialize(cordova, webView);		
+    }
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -105,10 +113,9 @@ public class PhoneDialer extends CordovaPlugin {
 			number = String.format("tel:%s", number);
 		}
 		
-		try {
-			myPhoneStateListener = new StatePhoneReceiver(this);
+		try {			
+			myPhoneStateListener = new StatePhoneReceiver(Context, this.cordova);
 			manager.listen(myPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE); // start listening to the phone changes
-
 			String IsSpeakerOn = args.getString(2);
 			if (IsSpeakerOn.toLowerCase() == "true") {
 				callFromApp = true;
@@ -124,7 +131,7 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 			
-			this.cordova.getActivity().startActivity(intent);									
+			cordova.getActivity().startActivity(intent);									
 
 			this.callbackContext.success();
 		} 
@@ -201,8 +208,10 @@ public class PhoneDialer extends CordovaPlugin {
 	// Monitor for changes to the state of the phone
 	public class StatePhoneReceiver extends PhoneStateListener {
 		Context context;
-		public StatePhoneReceiver(Context context) {
+		CordovaInterface cordova;
+		public StatePhoneReceiver(Context context, CordovaInterface cordova) {
 			this.context = context;
+			this.cordova = cordova;
 		}
 
 		@Override
@@ -222,7 +231,7 @@ public class PhoneDialer extends CordovaPlugin {
 				}
 			
 				//Activate loudspeaker
-				AudioManager audioManager = (AudioManager)this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
+				AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
 				audioManager.setMode(AudioManager.MODE_IN_CALL);
 				audioManager.setSpeakerphoneOn(true);
 			}
