@@ -47,6 +47,8 @@ public class PhoneDialer extends CordovaPlugin {
 				}
 			} else if ("dial".equalsIgnoreCase(action)) {
 				dialPhone(executeArgs);
+			} else if ("speakerOn".equalsIgnoreCase(action)) {
+				this.speakerOn();				
 			}
 		
 			return true;
@@ -107,21 +109,7 @@ public class PhoneDialer extends CordovaPlugin {
 				intent.setPackage(getDialerPackage(intent));
 			}
 			
-			this.cordova.getActivity().startActivity(intent);						
-
-			try {
-				Thread.sleep(500); // Delay 0,5 seconds to handle better turning on loudspeaker
-			} catch (InterruptedException e) {				
-			}
-
-			String IsSpeakerOn = args.getString(2);		
-			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-			audioManager.setMode(AudioManager.MODE_IN_CALL);
-			if (IsSpeakerOn.toLowerCase() == "true") {
-				audioManager.setSpeakerphoneOn(true);
-			} else {
-				audioManager.setSpeakerphoneOn(false);
-			}
+			this.cordova.getActivity().startActivity(intent);									
 
 			this.callbackContext.success();
 		} 
@@ -130,6 +118,16 @@ public class PhoneDialer extends CordovaPlugin {
 		}
 	}
 
+    private void speakerOn() {
+		try {
+			AudioManager audioManager = (AudioManager) this.cordova.getActivity().getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+			audioManager.setSpeakerphoneOn(true);
+			this.callbackContext.success();
+		} 
+		catch (Exception e) {
+			this.callbackContext.error("Could Not Enable Speaker");
+		}
+    }
 	
 	private void dialPhone(JSONArray args) throws JSONException {
 		String number = args.getString(0);

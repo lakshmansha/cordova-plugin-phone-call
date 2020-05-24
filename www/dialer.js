@@ -23,7 +23,7 @@ module.exports = {
             if (successCallback) successCallback();
         }
     },
-    call: function(phnum, errorCallback, successCallback, IsSpeakerOn, bypassAppChooser) {
+    call: function(phnum, errorCallback, successCallback, bypassAppChooser) {
         if (phnum == null) errorCallback("empty");
         if (platformId == 'ios' || platformId == 'android') {
             exec(
@@ -31,10 +31,23 @@ module.exports = {
                 errorCallback, 
                 "PhoneDialer", 
                 "call", 
-                [phnum, bypassAppChooser, IsSpeakerOn]
+                [phnum, bypassAppChooser]
             );
         } else {
             document.location.href = "tel:" + phnum;
+            if (successCallback) successCallback();
+        }
+    },
+    speakerOn : function(errorCallback, successCallback) {
+        if (platformId == 'ios' || platformId == 'android') {
+            exec(
+                successCallback, 
+                errorCallback, 
+                "PhoneDialer", 
+                "speakerOn",
+                []
+            );
+        } else {
             if (successCallback) successCallback();
         }
     }

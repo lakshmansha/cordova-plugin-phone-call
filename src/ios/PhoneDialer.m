@@ -67,7 +67,6 @@
             NSString* url;
             NSString* number = [command.arguments objectAtIndex:0];
             NSString* appChooser = [command.arguments objectAtIndex:1];
-            NSString* IsSpeakerOn = [command.arguments objectAtIndex:2].lowercaseString;            
 
             if (number != nil && [number length] > 0) {
                 if ([number hasPrefix:@"tel:"] || [number hasPrefix:@"telprompt://"]) {
@@ -88,15 +87,6 @@
                 } else {
                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
                 }
-
-                if([IsSpeakerOn isEqualToString: @"true"]){
-                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];  
-                    NSLog(@"Configuring Speaker On");  
-                } else {
-                    [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error];
-                    NSLog(@"Configuring Speaker OFf");
-                }
-
             } else {
                 // missing phone number
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"empty"];
@@ -156,19 +146,17 @@
     }];
 }
 
-- (BOOL)speakerOn
-{        
-    BOOL success = nil;
-    @try {
-        AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
-        success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];    
-        NSLog(@"Configuring Speaker On");
-    }    
-    @catch (NSException *exception) {
-       NSLog(@"Unknown error returned from Configuring Speaker On");
+- (void)speakerOn:(CDVInvokedUrlCommand*)command
+{
+    CDVPluginResult* pluginResult = nil;
+    AVAudioSession *sessionInstance = [AVAudioSession sharedInstance];
+    BOOL success = [sessionInstance overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+    if(success) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    } else {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"An error occurred"];
     }
-    return success;
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
-
 
 @end
