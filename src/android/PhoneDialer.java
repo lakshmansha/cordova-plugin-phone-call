@@ -140,6 +140,7 @@ public class PhoneDialer extends CordovaPlugin {
 						callFromOffHook=false;
 						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
 						audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+						audioManager.setSpeakerphoneOn(false);
 						manager.listen(myPhoneStateListener, // Remove listener
 								PhoneStateListener.LISTEN_NONE);
 					}
