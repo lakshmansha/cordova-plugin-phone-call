@@ -124,13 +124,13 @@ public class PhoneDialer extends CordovaPlugin {
 						callFromOffHook=true;
 
 						try {
-							Thread.sleep(100); // Delay 0,5 seconds to handle better turning on loudspeaker
+							Thread.sleep(5000); // Delay 0,5 seconds to handle better turning on loudspeaker
 						} catch (InterruptedException e) {
 						}
 
 						//Activate loudspeaker
 						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
-						audioManager.setMode(AudioManager.MODE_IN_CALL);
+						audioManager.setMode(AudioManager.MODE_NORMAL);
 						audioManager.setSpeakerphoneOn(true);
 					}
 					break;
@@ -140,6 +140,7 @@ public class PhoneDialer extends CordovaPlugin {
 						callFromOffHook=false;
 						AudioManager audioManager = (AudioManager) this.cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
 						audioManager.setMode(AudioManager.MODE_NORMAL); //Deactivate loudspeaker
+						audioManager.setSpeakerphoneOn(false);
 						manager.listen(myPhoneStateListener, // Remove listener
 								PhoneStateListener.LISTEN_NONE);
 					}
