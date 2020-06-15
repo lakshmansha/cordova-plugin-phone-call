@@ -88,14 +88,14 @@ public class PhoneDialer extends CordovaPlugin {
 		// }
 	}
 
-	public void onRequestPermissionResult(int requestCode, String[] permissions,
-										int[] grantResults) throws JSONException {
-	for (int r : grantResults) {
-		if (r == PackageManager.PERMISSION_DENIED) {
-			this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
-			return;
+	public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException {
+		for (int r : grantResults) {
+			if (r == PackageManager.PERMISSION_DENIED) {
+				this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
+				return;
+			}
 		}
-	}
+
 		switch (requestCode) {
 		case CALL_REQ_CODE:
 			callPhone(executeArgs);
