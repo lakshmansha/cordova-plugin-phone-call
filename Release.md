@@ -1,5 +1,9 @@
 # Plugin Release History
 
+## Version 1.1.3
+
+- iOS Build Error Fixed.
+
 ## Version 1.1.2
 
 - Bug Fixes on Loud Speaker Call.
